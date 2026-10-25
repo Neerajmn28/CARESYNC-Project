@@ -1,0 +1,12 @@
+{
+	"name": "DSPostgresSQL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LSPostgressql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "PostgreSqlV2Table",
+		"schema": []
+	}
+}
