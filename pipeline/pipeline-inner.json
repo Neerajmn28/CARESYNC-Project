@@ -60,7 +60,7 @@
 					"source": {
 						"type": "PostgreSqlV2Source",
 						"query": {
-							"value": "select * from PUBLIC.@{activity('Lookup1').output.firstRow.source_table_name}",
+							"value": "select * from PUBLIC.@{activity('Read Table Details').output.firstRow.source_table_name}",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00"
@@ -144,11 +144,11 @@
 					"notebookPath": "/caresync-repo/caresync-repo/Caresync-adb-repo/landing-to-bronze",
 					"baseParameters": {
 						"source_system": {
-							"value": "@activity('Lookup1').output.firstRow.source_system",
+							"value": "@activity('Read Table Details').output.firstRow.source_system",
 							"type": "Expression"
 						},
 						"table_name": {
-							"value": "@activity('Lookup1').output.firstRow.bronze_table_name",
+							"value": "@activity('Read Table Details').output.firstRow.bronze_table_name",
 							"type": "Expression"
 						},
 						"landing_timestamp": {
@@ -163,7 +163,7 @@
 				}
 			},
 			{
-				"name": "Notebook1_copy1",
+				"name": "Bronze_to_silver",
 				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
@@ -185,7 +185,7 @@
 					"notebookPath": "/caresync-repo/caresync-repo/Caresync-adb-repo/Bronze_to_silver",
 					"baseParameters": {
 						"table_name": {
-							"value": "@activity('Lookup1').output.firstRow.silver_table_name",
+							"value": "@activity('Read Table Details').output.firstRow.silver_table_name",
 							"type": "Expression"
 						},
 						"landing_timestamp": {
@@ -198,12 +198,52 @@
 					"referenceName": "AzureDatabricks1",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Update Failed Status",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "Bronze_to_silver",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "LSAzureSqlDatabaseN",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": {
+								"value": "UPDATE CTRL.audit_log\nSET\n    status = 'SUCCESS',\n    END_TIME = SYSUTCDATETIME(),\n    records_written = @{activity('Bronze_to_silver').output.runOutput}\nWHERE\n    adf_run_id = '@{pipeline().parameters.adf_run_id}'\n    AND table_id = @{pipeline().parameters.table_id};",
+								"type": "Expression"
+							}
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
 			}
 		],
 		"parameters": {
 			"table_id": {
 				"type": "string",
 				"defaultValue": "1"
+			},
+			"adf_run_id": {
+				"type": "string",
+				"defaultValue": "a1"
 			}
 		},
 		"variables": {
