@@ -135,7 +135,7 @@
 									{
 										"type": "Query",
 										"text": {
-											"value": "UPDATE CTRL.audit_log\nSET status = 'FAILED', END_TIME = SOURCE_TO_SILVER()\nWHERE adf_run_id = '@{pipeline().parameters.adf_run_id}' and table_id=@{item().table_id}",
+											"value": "UPDATE CTRL.audit_log\nSET status = 'FAILED', END_TIME = SYSUTCDATETIME()\nWHERE adf_run_id = '@{pipeline().parameters.adf_run_id}' and table_id=@{item().table_id}",
 											"type": "Expression"
 										}
 									}
@@ -154,7 +154,7 @@
 			},
 			"adf_run_id": {
 				"type": "string",
-				"defaultValue": "a2"
+				"defaultValue": "a3"
 			}
 		},
 		"variables": {
