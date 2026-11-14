@@ -18,14 +18,14 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "@concat(\n    'SELECT * FROM ctrl.table_config WHERE table_id = ',\n    string(pipeline().parameters.table_id),\n    ' AND is_active = 1'\n)",
+							"value": "select * from ctrl.table_config WHERE table_id=@{pipeline().parameters.table_id}",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "AzureSqlTable2",
+						"referenceName": "AzureSqlTable1",
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": true
