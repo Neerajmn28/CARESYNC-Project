@@ -430,7 +430,8 @@
 												"folder": {
 													"value": "@activity('Read Table Details').output.firstRow.source_path",
 													"type": "Expression"
-												}
+												},
+												"container": "source"
 											}
 										}
 									],
@@ -461,7 +462,7 @@
 			},
 			"adf_run_id": {
 				"type": "string",
-				"defaultValue": "a1"
+				"defaultValue": "a7"
 			}
 		},
 		"variables": {
