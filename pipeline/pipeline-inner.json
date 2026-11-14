@@ -353,6 +353,7 @@
 							"typeProperties": {
 								"scripts": [
 									{
+										"type": "Query",
 										"text": "update ctrl.watermark\nset watermark_value=SYSUTCDATETIME()\nwhere table_id={pipeline().parameters.table_id};"
 									}
 								],
