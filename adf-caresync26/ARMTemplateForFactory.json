@@ -137,7 +137,7 @@
 									"type": "Script",
 									"dependsOn": [
 										{
-											"activity": "inside pipeline",
+											"activity": "Ingest from source",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -169,7 +169,7 @@
 									}
 								},
 								{
-									"name": "inside pipeline",
+									"name": "Ingest from source",
 									"type": "ExecutePipeline",
 									"dependsOn": [
 										{
@@ -190,6 +190,23 @@
 										},
 										"waitOnCompletion": true,
 										"parameters": {}
+									}
+								},
+								{
+									"name": "Update pipeline as failed",
+									"type": "Fail",
+									"dependsOn": [
+										{
+											"activity": "Ingest from source",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"message": "Inner pipeline failed",
+										"errorCode": "500"
 									}
 								}
 							]
