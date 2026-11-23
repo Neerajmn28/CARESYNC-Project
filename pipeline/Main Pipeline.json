@@ -51,35 +51,6 @@
 					"isSequential": false,
 					"activities": [
 						{
-							"name": "Ingest from source",
-							"type": "ExecutePipeline",
-							"dependsOn": [
-								{
-									"activity": "Insert in Progress Status",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"pipeline": {
-									"referenceName": "pipeline-inner",
-									"type": "PipelineReference"
-								},
-								"waitOnCompletion": true,
-								"parameters": {
-									"table_id": {
-										"value": "@item().table_id",
-										"type": "Expression"
-									}
-								}
-							}
-						},
-						{
 							"name": "Insert in Progress Status",
 							"type": "Script",
 							"dependsOn": [],
@@ -113,9 +84,9 @@
 							"type": "Script",
 							"dependsOn": [
 								{
-									"activity": "Ingest from source",
+									"activity": "inside pipeline",
 									"dependencyConditions": [
-										"Failed"
+										"Succeeded"
 									]
 								}
 							],
@@ -142,6 +113,29 @@
 									}
 								],
 								"scriptBlockExecutionTimeout": "02:00:00"
+							}
+						},
+						{
+							"name": "inside pipeline",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "Insert in Progress Status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "pipeline-inner",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
 							}
 						}
 					]
